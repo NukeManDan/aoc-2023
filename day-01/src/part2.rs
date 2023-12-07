@@ -39,11 +39,11 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
                 let maybe_digit_position = line.find(|c: char| c.is_ascii_digit());
 
                 let maybe_number = match maybe_digit_position {
-                    Some(pos) => find_number_text(
+                    Some(pos) => find_written_digit(
                         line.get(0..pos)
                             .expect("we get a UTF8 substring, even if (0..0) => length = 0"),
                     ),
-                    _ => find_number_text(line),
+                    _ => find_written_digit(line),
                 };
 
                 match maybe_number {
@@ -57,11 +57,11 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
                 let maybe_digit_position = line.rfind(|c: char| c.is_ascii_digit());
 
                 let maybe_number = match maybe_digit_position {
-                    Some(pos) => rfind_number_text(
+                    Some(pos) => rfind_written_digit(
                         line.get(pos..line.len())
                             .expect("we get a UTF8 substring, even if (0..0) => length = 0"),
                     ),
-                    _ => rfind_number_text(line),
+                    _ => rfind_written_digit(line),
                 };
 
                 match maybe_number {
@@ -77,214 +77,6 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
                     .map_err(|_| AocError::SumError)?)
         })
         .map(|total| total.to_string())
-}
-
-/// Find the FIRST number fully written out in English (set "one",...,"nine") - left to right -  in a string literal.
-/// Return it's `char` representation (set '1'..'9').
-pub fn find_number_text(line_slice: &str) -> Option<char> {
-    if line_slice.len() < 3 {
-        return None;
-    };
-
-    let mut maybe_best: Option<(usize, char)> = None;
-
-    //step by 3, width of 5 chars to scan completely, if window of 5 is too big, do only 3 or 4 char words find.
-
-    if let Some(pos) = line_slice.find("one") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '1'))
-            };
-        } else {
-            maybe_best = Some((pos, '1'))
-        }
-    };
-    if let Some(pos) = line_slice.find("two") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '2'))
-            };
-        } else {
-            maybe_best = Some((pos, '2'))
-        }
-    };
-    if let Some(pos) = line_slice.find("three") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '3'))
-            };
-        } else {
-            maybe_best = Some((pos, '3'))
-        }
-    };
-    if let Some(pos) = line_slice.find("four") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '4'))
-            };
-        } else {
-            maybe_best = Some((pos, '4'))
-        }
-    };
-    if let Some(pos) = line_slice.find("five") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '5'))
-            };
-        } else {
-            maybe_best = Some((pos, '5'))
-        }
-    };
-    if let Some(pos) = line_slice.find("six") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '6'))
-            };
-        } else {
-            maybe_best = Some((pos, '6'))
-        }
-    };
-    if let Some(pos) = line_slice.find("seven") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '7'))
-            };
-        } else {
-            maybe_best = Some((pos, '7'))
-        }
-    };
-    if let Some(pos) = line_slice.find("eight") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '8'))
-            };
-        } else {
-            maybe_best = Some((pos, '8'))
-        }
-    };
-    if let Some(pos) = line_slice.find("nine") {
-        if let Some(best) = maybe_best {
-            if best.0 > pos {
-                maybe_best = Some((pos, '9'))
-            };
-        } else {
-            maybe_best = Some((pos, '9'))
-        }
-    };
-    Some(maybe_best?.1)
-}
-
-/// Find the FIRST number fully written out in English (set "one",...,"nine") - left to right -  in a string literal.
-/// Return it's `char` representation (set '1'..'9').
-pub fn rfind_number_text(line_slice: &str) -> Option<char> {
-    if line_slice.len() < 3 {
-        return None;
-    };
-
-    let mut maybe_best: Option<(usize, char)> = None;
-
-    //step by 3, width of 5 chars to scan completely, if window of 5 is too big, do only 3 or 4 char words find.
-
-    if let Some(pos) = line_slice.rfind("one") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '1'))
-            };
-        } else {
-            maybe_best = Some((pos, '1'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("two") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '2'))
-            };
-        } else {
-            maybe_best = Some((pos, '2'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("three") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '3'))
-            };
-        } else {
-            maybe_best = Some((pos, '3'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("four") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '4'))
-            };
-        } else {
-            maybe_best = Some((pos, '4'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("five") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '5'))
-            };
-        } else {
-            maybe_best = Some((pos, '5'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("six") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '6'))
-            };
-        } else {
-            maybe_best = Some((pos, '6'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("seven") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '7'))
-            };
-        } else {
-            maybe_best = Some((pos, '7'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("eight") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '8'))
-            };
-        } else {
-            maybe_best = Some((pos, '8'))
-        }
-    };
-    if let Some(pos) = line_slice.rfind("nine") {
-        if let Some(best) = maybe_best {
-            if best.0 < pos {
-                maybe_best = Some((pos, '9'))
-            };
-        } else {
-            maybe_best = Some((pos, '9'))
-        }
-    };
-    Some(maybe_best?.1)
-}
-
-pub fn find_position_of_digit(full: &str, sub: &str) -> Option<(usize, char)> {
-    Some((
-        full.find(sub)?,
-        match sub {
-            "one" => '1',
-            "two" => '2',
-            "three" => '3',
-            "four" => '4',
-            "five" => '5',
-            "six" => '6',
-            "seven" => '7',
-            "eight" => '8',
-            "nine" => '9',
-            _ => return None,
-        },
-    ))
 }
 
 pub fn find_written_digit(line: &str) -> Option<char> {
@@ -323,6 +115,46 @@ pub fn find_written_digit(line: &str) -> Option<char> {
     // We check the next char, recursively, in the line
     find_written_digit(
         std::str::from_utf8(&line.as_bytes()[1..]).expect("must have UTF8 encoded strings"),
+    )
+}
+
+pub fn rfind_written_digit(line: &str) -> Option<char> {
+    if line.len() < 3 {
+        return None;
+    };
+
+    if line.ends_with("one") {
+        return Some('1');
+    };
+    if line.ends_with("two") {
+        return Some('2');
+    };
+    if line.ends_with("three") {
+        return Some('3');
+    };
+    if line.ends_with("four") {
+        return Some('4');
+    };
+    if line.ends_with("five") {
+        return Some('5');
+    };
+    if line.ends_with("six") {
+        return Some('6');
+    };
+    if line.ends_with("seven") {
+        return Some('7');
+    };
+    if line.ends_with("eight") {
+        return Some('8');
+    };
+    if line.ends_with("nine") {
+        return Some('9');
+    };
+
+    // We check the next char, recursively, in the line
+    find_written_digit(
+        std::str::from_utf8(&line.as_bytes()[..(line.len() - 1)])
+            .expect("must have UTF8 encoded strings"),
     )
 }
 
