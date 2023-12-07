@@ -49,7 +49,8 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
                 match maybe_number {
                     Some(ch) => ch,
                     // FIXME: this will behave badly if not ASCII, as it demands UTF8 encoded strings!
-                    None => line.as_bytes()[maybe_digit_position.ok_or(AocError::DigitMissing)?].as_char(),
+                    None => line.as_bytes()[maybe_digit_position.ok_or(AocError::DigitMissing)?]
+                        .as_char(),
                 }
             };
             let right = {
@@ -266,6 +267,63 @@ pub fn rfind_number_text(line_slice: &str) -> Option<char> {
         }
     };
     Some(maybe_best?.1)
+}
+
+pub fn find_position_of_digit(full: &str, sub: &str) -> Option<(usize, char)> {
+    Some((
+        full.find(sub)?,
+        match sub {
+            "one" => '1',
+            "two" => '2',
+            "three" => '3',
+            "four" => '4',
+            "five" => '5',
+            "six" => '6',
+            "seven" => '7',
+            "eight" => '8',
+            "nine" => '9',
+            _ => return None,
+        },
+    ))
+}
+
+pub fn find_written_digit(line: &str) -> Option<char> {
+    if line.len() < 3 {
+        return None;
+    };
+
+    if line.starts_with("one") {
+        return Some('1');
+    };
+    if line.starts_with("two") {
+        return Some('2');
+    };
+    if line.starts_with("three") {
+        return Some('3');
+    };
+    if line.starts_with("four") {
+        return Some('4');
+    };
+    if line.starts_with("five") {
+        return Some('5');
+    };
+    if line.starts_with("six") {
+        return Some('6');
+    };
+    if line.starts_with("seven") {
+        return Some('7');
+    };
+    if line.starts_with("eight") {
+        return Some('8');
+    };
+    if line.starts_with("nine") {
+        return Some('9');
+    };
+
+    // We check the next char, recursively, in the line
+    find_written_digit(
+        std::str::from_utf8(&line.as_bytes()[1..]).expect("must have UTF8 encoded strings"),
+    )
 }
 
 #[cfg(test)]
