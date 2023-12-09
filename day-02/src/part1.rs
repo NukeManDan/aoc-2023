@@ -29,9 +29,75 @@
 
 use crate::custom_error::AocError;
 
+// #[derive(Default)]
+// struct Game {
+//     id: usize,
+//     sets: [Set; 3],
+// }
+//
+// #[derive(Default)]
+// struct Set {
+//     r: usize,
+//     g: usize,
+//     b: usize,
+// }
+
+const RED_MAX: usize = 12;
+const GREEN_MAX: usize = 14;
+const BLUE_MAX: usize = 13;
+
 #[tracing::instrument]
-pub fn process(_input: &str) -> miette::Result<String, AocError> {
-    todo!("day 01 - part 1");
+pub fn process(input: &str) -> miette::Result<String, AocError> {
+    input
+        .lines()
+        .try_fold(0usize, |sum, line| {
+            let mut sets:Vec<_> = line.split(&[':', ';'][..]).collect();
+
+            dbg!(&sets);
+
+            // First we have all sets iters starting with the game ID:
+            let id = sets[0].strip_prefix("Game ")
+                .ok_or(AocError::MissingId)?
+                .parse::<usize>()
+                .map_err(|_| AocError::MissingId)?;
+
+            for i in 0..3 {
+                let balls: Vec<_> = sets.get(i).ok_or(AocError::MissingSet)?.split(',').collect();
+                for ball in balls {
+                    if let Some(red) = ball.strip_suffix("red") {
+                        if red
+                            .trim()
+                            .parse::<usize>()
+                            .map_err(|_| AocError::SetMalformed)?
+                            > RED_MAX
+                        {
+                            continue;
+                        };
+                    } else if let Some(green) = ball.strip_suffix("green") {
+                        if green
+                            .trim()
+                            .parse::<usize>()
+                            .map_err(|_| AocError::SetMalformed)?
+                            > GREEN_MAX
+                        {
+                            continue;
+                        };
+                    } else if let Some(blue) = ball.strip_suffix("blue") {
+                        if blue
+                            .trim()
+                            .parse::<usize>()
+                            .map_err(|_| AocError::SetMalformed)?
+                            > BLUE_MAX
+                        {
+                            continue;
+                        };
+                    }
+                }
+            }
+
+            Ok(sum + id)
+        })
+        .map(|total| total.to_string())
 }
 
 #[cfg(test)]
@@ -40,9 +106,12 @@ mod tests {
 
     #[test]
     fn test_process() -> miette::Result<()> {
-        todo!("haven't built test yet");
-        let input = "";
-        assert_eq!("", process(input)?);
+        let input = "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green";
+        assert_eq!("8", process(input)?);
         Ok(())
     }
 }

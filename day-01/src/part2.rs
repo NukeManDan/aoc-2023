@@ -152,7 +152,7 @@ pub fn rfind_written_digit(line: &str) -> Option<char> {
     };
 
     // We check the next char, recursively, in the line
-    find_written_digit(
+    rfind_written_digit(
         std::str::from_utf8(&line.as_bytes()[..(line.len() - 1)])
             .expect("must have UTF8 encoded strings"),
     )

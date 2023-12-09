@@ -11,13 +11,7 @@ mod tests {
 
     #[test]
     fn test_process() -> miette::Result<()> {
-        let input = "two1nine
-eightwothree
-abcone2threexyz
-xtwone3four
-4nineeightseven2
-zoneight234
-7pqrstsixteen";
+        let input = "";
         assert_eq!("", process(input)?);
         Ok(())
     }
