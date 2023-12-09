@@ -19,6 +19,10 @@ pub enum AocError {
     #[diagnostic(code(aoc::parsing_error))]
     SetMalformed,
 
+    #[error("Set must include at most balls up to MAX")]
+    #[diagnostic(code(aoc::parsing_error))]
+    ImpossibleSet,
+
     #[error("Cannot sum numbers")]
     #[diagnostic(code(aoc::processing_error))]
     SumError,

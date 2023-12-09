@@ -51,51 +51,56 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
     input
         .lines()
         .try_fold(0usize, |sum, line| {
-            let mut sets:Vec<_> = line.split(&[':', ';'][..]).collect();
-
-            dbg!(&sets);
+            let mut sets = line.split(&[':', ';'][..]);
 
             // First we have all sets iters starting with the game ID:
-            let id = sets[0].strip_prefix("Game ")
+            let id = sets
+                .next()
+                .expect("line must start with \"Game <ID>:\"")
+                .strip_prefix("Game ")
                 .ok_or(AocError::MissingId)?
                 .parse::<usize>()
                 .map_err(|_| AocError::MissingId)?;
 
-            for i in 0..3 {
-                let balls: Vec<_> = sets.get(i).ok_or(AocError::MissingSet)?.split(',').collect();
-                for ball in balls {
-                    if let Some(red) = ball.strip_suffix("red") {
-                        if red
-                            .trim()
-                            .parse::<usize>()
-                            .map_err(|_| AocError::SetMalformed)?
-                            > RED_MAX
-                        {
-                            continue;
-                        };
-                    } else if let Some(green) = ball.strip_suffix("green") {
-                        if green
-                            .trim()
-                            .parse::<usize>()
-                            .map_err(|_| AocError::SetMalformed)?
-                            > GREEN_MAX
-                        {
-                            continue;
-                        };
-                    } else if let Some(blue) = ball.strip_suffix("blue") {
-                        if blue
-                            .trim()
-                            .parse::<usize>()
-                            .map_err(|_| AocError::SetMalformed)?
-                            > BLUE_MAX
-                        {
-                            continue;
-                        };
+            if sets
+                .try_for_each(|set| {
+                    for ball in set.split(',') {
+                        if let Some(red) = ball.strip_suffix("red") {
+                            if red
+                                .trim()
+                                .parse::<usize>()
+                                .map_err(|_| AocError::SetMalformed)?
+                                > RED_MAX
+                            {
+                                return Err(AocError::ImpossibleSet);
+                            };
+                        } else if let Some(green) = ball.strip_suffix("green") {
+                            if green
+                                .trim()
+                                .parse::<usize>()
+                                .map_err(|_| AocError::SetMalformed)?
+                                > GREEN_MAX
+                            {
+                                return Err(AocError::ImpossibleSet);
+                            };
+                        } else if let Some(blue) = ball.strip_suffix("blue") {
+                            if blue
+                                .trim()
+                                .parse::<usize>()
+                                .map_err(|_| AocError::SetMalformed)?
+                                > BLUE_MAX
+                            {
+                                return Err(AocError::ImpossibleSet);
+                            };
+                        }
                     }
-                }
+                    Ok::<(), AocError>(())
+                })
+                .is_ok()
+            {
+                return Ok(sum + id)
             }
-
-            Ok(sum + id)
+            Ok(sum)
         })
         .map(|total| total.to_string())
 }
