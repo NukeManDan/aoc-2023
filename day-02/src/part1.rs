@@ -43,8 +43,8 @@ use crate::custom_error::AocError;
 // }
 
 const RED_MAX: usize = 12;
-const GREEN_MAX: usize = 14;
-const BLUE_MAX: usize = 13;
+const GREEN_MAX: usize = 13;
+const BLUE_MAX: usize = 14;
 
 #[tracing::instrument]
 pub fn process(input: &str) -> miette::Result<String, AocError> {
