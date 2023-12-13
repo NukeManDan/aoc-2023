@@ -29,19 +29,6 @@
 
 use crate::custom_error::AocError;
 
-// #[derive(Default)]
-// struct Game {
-//     id: usize,
-//     sets: [Set; 3],
-// }
-//
-// #[derive(Default)]
-// struct Set {
-//     r: usize,
-//     g: usize,
-//     b: usize,
-// }
-
 const RED_MAX: usize = 12;
 const GREEN_MAX: usize = 13;
 const BLUE_MAX: usize = 14;
