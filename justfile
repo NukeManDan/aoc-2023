@@ -16,4 +16,4 @@ flamegraph day part:
 dhat day part:
     cargo run --profile dhat --features dhat-heap --package day-{{day}} --bin part{{part}}
 create day:
-    cargo generate --path ./daily-template --name day-{{day}}
+    cargo generate --path ./daily-template --name day-{{day}} -d day={{day}}

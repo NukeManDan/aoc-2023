@@ -1,0 +1,4 @@
+[placeholders.day]
+type = "string"
+prompt = "What day is this for?"
+default = "00"

@@ -2,7 +2,7 @@ use crate::custom_error::AocError;
 
 #[tracing::instrument]
 pub fn process(input: &str) -> Result<String, AocError> {
-    todo!("day {{day}} - part 2");
+    todo!("day 03 - part 2");
 }
 
 #[cfg(test)]
