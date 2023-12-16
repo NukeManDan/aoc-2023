@@ -42,72 +42,30 @@ pub fn process(input: &str) -> Result<String, AocError> {
     // We can use tail recursion to peek at the next line, see if we keep numbers, and check if symbols exist to keep more in the present line than it indicates on it's own.
     // Although optimization may not happen... <https://stackoverflow.com/questions/59257543/when-is-tail-recursion-guaranteed-in-rust>
     // A mutable pointer to an enumerated iter with elements
-    let lines = input.lines();
-    let mut head = None;
 
-let r_num= regex!(r"\d+");
-assert_eq!(r_num.is_match("Saa"), false);
-    
-        for l in lines {
-        let num = l.chars().enumerate()
-        .filter(|(_, c)| c.is_digit(10));
-    } 
+    // ASSUME: All lines are same length!
+    let line_len = input.find('\n').ok_or(AocError::BadInput)?;
 
-    let parsed_lines: Vec<_> = lines.map(|l| l.split('.').enumerate()
-        .filter(|(_, s)| !s.is_empty())
-        .map(|(n, s)| (n+s.len(), s) )
-    )
-        .collect();
-    parsed_lines.windows(2).try_fold(0usize, |sum, parsed_pair| {
-        // If we can parse there is no adjacent symbol on this line.
-        for item in parsed_pair[0]{
-          if let Ok(num) = item.parse::<usize>(){
-                if parsed_pair[1] 
-            };  
+    let r_num = regex!(r"\d+");
+    let r_sym = regex!(r"[^.\d\n]+");
+
+    let range_nums = r_num.find_iter(input).map(|m| m.range());
+    let mut earliest_range = range_nums.next().expect("must have one number in input")
+    // let range_syms: Vec<_> = r_sym.find_iter(input).map(|m| m.range()).collect();
+
+    input.char_indices().filter_map(|(idx, c)| {
+        if c != '.' && c.is_ascii_punctuation() {
+                // move up the iterator so ... this might be wrong
+            if earliest_range.end > idx {
+                    earliest_range = range_nums.next()?;
+                }
+            return Some(range_nums);
+        } else {
+            return None;
         }
-        return Ok(sum);
     });
-    
-    let parsed_lines: &[&str] = lines.try_for_each(|line| 
-        {
-            line.split('.').for_each( |sub| {
-                    if let Ok(num) =  sub.parse::<usize>(){
-                        num
-                    }
-            }
-                )
-                .map_err(|_| AocError::BadInput)?
-        }
-    );
-    // Each line can be split on '.' to yield an array with *each comma* seporating items being a period in the original str:
-    // ```
-    // let v: Vec<_> = ".35.?..633../42.4445....".split('.').collect();
-    // assert_eq!(v, ["", "35", "?", "", "633", "", "/42", "4445", "", "", "", ""]);
-    // ```
-    // Thus we can count position of substrings by it's position in the array to compair between lines
 
-    lines
-        .try_fold(0usize, |sum, line| {
-            let top = line
-                .split('.').for_each( |sub| 
-                    //if we can parse then there is no adjacent symbol on this line.
-                    if let Ok(num) =  sub.parse::<usize>(){
-                        num
-                    }
-                )
-                .map_err(|_| AocError::MissingId)?;
-
-            let top = line
-                .match_indices(|c: char| c.is_digit(10))
-                .match_indices(|c: char| c != '.' && c.is_ascii_punctuation())
-                .map_err(|_| AocError::MissingId)?;
-
-            {
-                return Ok(sum + id);
-            }
-            Ok(sum)
-        })
-        .map(|total| total.to_string())
+    Ok("".to_string())
 }
 
 #[cfg(test)]
