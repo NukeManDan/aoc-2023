@@ -31,8 +31,6 @@
 //!
 //! Of course, the actual engine schematic is much larger. What is the sum of all of the part numbers in the engine schematic?
 
-use lazy_regex::regex;
-
 use crate::custom_error::AocError;
 
 #[tracing::instrument]
@@ -46,16 +44,15 @@ pub fn process(input: &str) -> Result<String, AocError> {
     // ASSUME: All lines are same length!
     let line_len = input.find('\n').ok_or(AocError::BadInput)?;
 
-    let r_num = regex!(r"\d+");
-    let r_sym = regex!(r"[^.\d\n]+");
+    Ok(input
+        .chars()
+        .try_fold(0usize, |sum, c| {
+            (c == '.').then_some(sum)?;
+            c.is_ascii_punctuation().then_some(sum)?;
+            Some(sum)
+        }).ok_or(AocError::CannotIndex)?
+        .to_string())
 
-    let mut range_nums = r_num.find_iter(input).map(|m| m.range());
-    let range_syms = r_sym.find_iter(input).map(|m| m.range());
-
-        range_nums.try_fold(0usize, |sum, num_range| {
-            num_range.start
-        })
-        .map(|total| total.to_string())
     // TODO: this line of thinking may be faster... but need to not use iter methods that do a ton of extra .next() calls just to arive from the input at a specific range to compair to.
     //
     // for nrange in range_nums {
@@ -87,7 +84,6 @@ pub fn process(input: &str) -> Result<String, AocError> {
     //     };
 
     // }
-
 }
 
 #[cfg(test)]
