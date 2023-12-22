@@ -15,4 +15,8 @@ pub enum AocError {
     #[error("input unable to parse")]
     #[diagnostic(code(aoc::parsing_error))]
     BadInput,
+
+    #[error("unable to get slice in string")]
+    #[diagnostic(code(aoc::parsing_error))]
+    CannotIndex,
 }

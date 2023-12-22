@@ -49,23 +49,45 @@ pub fn process(input: &str) -> Result<String, AocError> {
     let r_num = regex!(r"\d+");
     let r_sym = regex!(r"[^.\d\n]+");
 
-    let range_nums = r_num.find_iter(input).map(|m| m.range());
-    let mut earliest_range = range_nums.next().expect("must have one number in input")
-    // let range_syms: Vec<_> = r_sym.find_iter(input).map(|m| m.range()).collect();
+    let mut range_nums = r_num.find_iter(input).map(|m| m.range());
+    let range_syms = r_sym.find_iter(input).map(|m| m.range());
 
-    input.char_indices().filter_map(|(idx, c)| {
-        if c != '.' && c.is_ascii_punctuation() {
-                // move up the iterator so ... this might be wrong
-            if earliest_range.end > idx {
-                    earliest_range = range_nums.next()?;
-                }
-            return Some(range_nums);
-        } else {
-            return None;
-        }
-    });
+        range_nums.try_fold(0usize, |sum, num_range| {
+            num_range.start
+        })
+        .map(|total| total.to_string())
+    // TODO: this line of thinking may be faster... but need to not use iter methods that do a ton of extra .next() calls just to arive from the input at a specific range to compair to.
+    //
+    // for nrange in range_nums {
+    //     if !input
+    //         .get(nrange.start - 1..nrange.start)
+    //         .ok_or(AocError::CannotIndex)?
+    //         .chars()
+    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
+    //     {
+    //         continue;
+    //     };
 
-    Ok("".to_string())
+    //     if !input
+    //         .get(nrange.end + 1..nrange.start)
+    //         .ok_or(AocError::CannotIndex)?
+    //         .chars()
+    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
+    //     {
+    //         continue;
+    //     };
+
+    //     if !input
+    //         .get((nrange.start + line_len - 1)..(nrange.end + line_len + 1))
+    //         .ok_or(AocError::CannotIndex)?
+    //         .chars()
+    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
+    //     {
+    //         continue;
+    //     };
+
+    // }
+
 }
 
 #[cfg(test)]
