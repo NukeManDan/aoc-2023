@@ -49,34 +49,31 @@ pub fn process(input: &str) -> Result<String, AocError> {
     // Collect the index range for every number, and the value within
     let mut digit_indicies = Vec::with_capacity(input.len() / 4);
 
-    let mut maybe_buf: Option<(Option<usize>, String)> = None;
+    let mut buf: Option<(usize, String)> = None;
     for (idx, c) in input.chars().enumerate() {
-        if maybe_buf.is_none() {
-            if c == '.' {
+        if c.is_ascii_digit() {
+            if buf.is_none() {
+                buf = Some((idx, c.to_string()));
                 continue;
             }
-            if c.is_ascii_punctuation() {
-                punct_pos.push(idx);
-                continue;
-            }
+            buf.as_mut().unwrap().1.push(c);
+            continue;
         }
-        if let Some(buf) = maybe_buf.as_mut() {
-            if c.is_ascii_digit() {
-                buf.1.push(c);
-                if buf.0.is_none() {
-                    buf.0 = Some(idx)
-                };
-            } else {
-                if c.is_ascii_punctuation() {
-                    punct_pos.push(idx);
-                }
-                // we are one past the number, ala Range (start..end
-                // std::ops::Range {start: buf.0.unwrap(), end: idx}
-                digit_indicies.push(buf.1.parse::<usize>());
-                maybe_buf = None;
-            }
+        if buf.is_some() {
+            // we are one past the number, ala Range (start..end
+            // std::ops::Range {start: buf.0.unwrap(), end: idx}
+            digit_indicies.push(buf.unwrap());
+            buf = None;
+        }
+        // ASSUME: all non-digits are punctuation/symb we want.
+        if c != '.' && c != '\n' {
+            punct_pos.push(idx);
+            continue;
         }
     }
+
+    dbg!(punct_pos.clone());
+    dbg!(digit_indicies.clone());
 
     Ok("".to_string())
 }
