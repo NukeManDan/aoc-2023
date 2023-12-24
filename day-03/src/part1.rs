@@ -44,46 +44,41 @@ pub fn process(input: &str) -> Result<String, AocError> {
     // ASSUME: All lines are same length!
     let line_len = input.find('\n').ok_or(AocError::BadInput)?;
 
-    Ok(input
-        .chars()
-        .try_fold(0usize, |sum, c| {
-            (c == '.').then_some(sum)?;
-            c.is_ascii_punctuation().then_some(sum)?;
-            Some(sum)
-        }).ok_or(AocError::CannotIndex)?
-        .to_string())
+    // Collect the byte index of each punctuation, this will be in incremental order, unless latter done on threads...
+    let mut punct_pos = Vec::with_capacity(input.len() / 4);
+    // Collect the index range for every number, and the value within
+    let mut digit_indicies = Vec::with_capacity(input.len() / 4);
 
-    // TODO: this line of thinking may be faster... but need to not use iter methods that do a ton of extra .next() calls just to arive from the input at a specific range to compair to.
-    //
-    // for nrange in range_nums {
-    //     if !input
-    //         .get(nrange.start - 1..nrange.start)
-    //         .ok_or(AocError::CannotIndex)?
-    //         .chars()
-    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
-    //     {
-    //         continue;
-    //     };
+    let mut maybe_buf: Option<(Option<usize>, String)> = None;
+    for (idx, c) in input.chars().enumerate() {
+        if maybe_buf.is_none() {
+            if c == '.' {
+                continue;
+            }
+            if c.is_ascii_punctuation() {
+                punct_pos.push(idx);
+                continue;
+            }
+        }
+        if let Some(buf) = maybe_buf.as_mut() {
+            if c.is_ascii_digit() {
+                buf.1.push(c);
+                if buf.0.is_none() {
+                    buf.0 = Some(idx)
+                };
+            } else {
+                if c.is_ascii_punctuation() {
+                    punct_pos.push(idx);
+                }
+                // we are one past the number, ala Range (start..end
+                // std::ops::Range {start: buf.0.unwrap(), end: idx}
+                digit_indicies.push(buf.1.parse::<usize>());
+                maybe_buf = None;
+            }
+        }
+    }
 
-    //     if !input
-    //         .get(nrange.end + 1..nrange.start)
-    //         .ok_or(AocError::CannotIndex)?
-    //         .chars()
-    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
-    //     {
-    //         continue;
-    //     };
-
-    //     if !input
-    //         .get((nrange.start + line_len - 1)..(nrange.end + line_len + 1))
-    //         .ok_or(AocError::CannotIndex)?
-    //         .chars()
-    //         .fold(true, |acc, c| acc && c != '.' && c.is_ascii_punctuation())
-    //     {
-    //         continue;
-    //     };
-
-    // }
+    Ok("".to_string())
 }
 
 #[cfg(test)]
