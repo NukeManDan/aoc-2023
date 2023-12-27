@@ -1,4 +1,3 @@
-
 use miette::Diagnostic;
 use thiserror::Error;
 
@@ -19,4 +18,8 @@ pub enum AocError {
     #[error("unable to get slice in string")]
     #[diagnostic(code(aoc::parsing_error))]
     CannotIndex,
+
+    #[error("unable parse digit string")]
+    #[diagnostic(code(aoc::parsing_error))]
+    CannotParse,
 }

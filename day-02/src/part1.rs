@@ -87,7 +87,7 @@ pub fn process(input: &str) -> miette::Result<String, AocError> {
                 })
                 .is_ok()
             {
-                return Ok(sum + id)
+                return Ok(sum + id);
             }
             Ok(sum)
         })
