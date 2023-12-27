@@ -72,19 +72,26 @@ pub fn process(input: &str) -> Result<String, AocError> {
         }
     }
 
-    dbg!(punct_pos.clone());
-    dbg!(digit_indicies.clone());
+    // dbg!(punct_pos.clone());
+    // dbg!(digit_indicies.clone());
 
     let mut total = 0;
     for (idx, num) in digit_indicies {
         // find adjacent punctutation to any parsed number
         if punct_pos.iter().any(|&p| {
-            let diff = idx.abs_diff(p + 1);
-            diff == 0 // char before
-            || diff == num.len() // char after
-            || (line_len..line_len + num.len()).contains(&diff) // range above and below
+            let diff = p as isize - idx as isize;
+            if diff > (num.len() + line_len + 1) as isize {
+                return false;
+            }
+            // println!("{idx} -- {p} == {diff}");
+            diff == -1 // char before
+            || diff == num.len() as isize // char after
+            || (-(line_len as isize + 2)..= -((line_len - num.len() +1 ) as isize )).contains(&diff)
+            || ((line_len as isize )..= ((line_len + num.len() + 1)as isize)).contains(&diff)
+            // FIXME: ^^ the above should just be a abs val check... range line before and after
         }) {
             total += num.parse::<usize>().map_err(|_| AocError::CannotParse)?;
+            // println!("TOTAL: {total}");
         }
         // We want to prune too far back items, as we are sorted,
         // anything past 2 chars + earliest puctuation + line length is imposssible to be adjacent.
@@ -111,8 +118,9 @@ mod tests {
 ..592.....
 ......755.
 ...$.*....
-.664.598..";
-        assert_eq!("4361", process(input)?);
+.664.598..
+";
+        assert_eq!("467835", process(input)?);
         Ok(())
     }
 }
