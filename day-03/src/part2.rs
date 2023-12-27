@@ -91,18 +91,20 @@ pub fn process(input: &str) -> Result<String, AocError> {
         }
     }
 
-    dbg!(punct_pos.clone());
-    dbg!(digit_indicies.clone());
+    // dbg!(punct_pos.clone());
+    // dbg!(digit_indicies.clone());
 
     let mut total = 0;
     for p in punct_pos {
-        // find adjacent punctutation to any parsed number
+        let mut left: Option<usize> = None;
+        let mut right: Option<usize> = None;
+
         for (idx, num) in digit_indicies.clone() {
             let diff = p as isize - idx as isize;
             if diff.unsigned_abs() > num.len() + line_len + 1 {
                 continue;
             }
-            println!("p - idx == diff // {p} - {idx} == {diff}");
+            // println!("p - idx == diff // {p} - {idx} == {diff}");
 
             if diff == -1 // char before
             || diff == num.len() as isize // char after
@@ -110,9 +112,21 @@ pub fn process(input: &str) -> Result<String, AocError> {
             || ((line_len as isize )..= ((line_len + num.len() + 1)as isize)).contains(&diff)
             // FIXME: ^^ the above should just be a abs val check... range line before and after
             {
-                total += dbg!(num.parse::<usize>().map_err(|_| AocError::CannotParse)?);
-                println!("TOTAL: {total}");
+                if right.is_some() {
+                    // We have too many adjacent numbers
+                    break;
+                }
+                if left.is_some() {
+                    right = Some(num.parse::<usize>().map_err(|_| AocError::CannotParse)?);
+                    continue;
+                };
+                left = Some(num.parse::<usize>().map_err(|_| AocError::CannotParse)?);
+                // println!("{left:?} - {right:?}");
             }
+        }
+        if right.is_some() {
+            total += left.unwrap() * right.unwrap();
+            // println!("TOTAL: {total}");
         }
         // We want to prune too far back items, as we are sorted,
         // anything past 2 chars + earliest puctuation + line length is imposssible to be adjacent.
