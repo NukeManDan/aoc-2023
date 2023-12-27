@@ -91,7 +91,7 @@ pub fn process(input: &str) -> Result<String, AocError> {
             // FIXME: ^^ the above should just be a abs val check... range line before and after
         }) {
             total += num.parse::<usize>().map_err(|_| AocError::CannotParse)?;
-            // println!("TOTAL: {total}");
+            println!("TOTAL: {total}");
         }
         // We want to prune too far back items, as we are sorted,
         // anything past 2 chars + earliest puctuation + line length is imposssible to be adjacent.
@@ -120,7 +120,7 @@ mod tests {
 ...$.*....
 .664.598..
 ";
-        assert_eq!("467835", process(input)?);
+        assert_eq!("4361", process(input)?);
         Ok(())
     }
 }
