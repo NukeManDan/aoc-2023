@@ -33,11 +33,33 @@
 //!
 //! **How many points are they worth in total?**
 
+use itertools::Itertools;
+
 use crate::custom_error::AocError;
 
 #[tracing::instrument]
 pub fn process(input: &str) -> Result<String, AocError> {
-    Ok("".to_string())
+    input
+        .lines()
+        .try_fold(0usize, |sum, line| {
+            let nums = &line[line.find(':').ok_or(AocError::CannotParse)? + 1..];
+            let (winners, mine) = nums.split('|').next_tuple().ok_or(AocError::CannotParse)?;
+            let mut points = 1;
+
+            for m in mine.split_whitespace() {
+                for w in winners.split_whitespace() {
+                    // dbg!((mine,winners));
+                    // dbg!((m,w));
+                    if m == w {
+                        points <<= 1;
+                        // dbg!(points >> 1);
+                    }
+                }
+            }
+
+            Ok(sum + (points >> 1)) // we overshifted by one as we cannot start at 0 to use bitwise shit operators for math
+        })
+        .map(|total| total.to_string())
 }
 
 #[cfg(test)]
